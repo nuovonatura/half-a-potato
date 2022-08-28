@@ -6,4 +6,4 @@ services:
     entrypoint: python3
     command: webserver.py
     ports:
-        - 80:80
+        - 8000:80
