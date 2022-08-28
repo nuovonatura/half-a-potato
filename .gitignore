@@ -130,3 +130,6 @@ dmypy.json
 
 # Mac File system DS_ignore
 .DS_Store
+
+# Ignore output
+out/
