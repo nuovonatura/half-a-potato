@@ -2,7 +2,7 @@ import csv
 import requests
 import sys
 
-filename = sys.argv[1]
+filename = f"../in/{sys.argv[1]}"
 rows = []
 with open(filename, 'r') as file :
     csvreader = csv.reader(file)
