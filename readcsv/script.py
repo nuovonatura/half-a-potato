@@ -18,7 +18,8 @@ with open(filename, 'r') as file :
         output = f"../out/{index}.html"
         link = row[3]
         payload = {}
+        payload["index"] = index
         payload["url"] = link
         res = requests.post("http://localhost:8000", data=payload)
-        with open(output, "x") as file:
-            file.write(res.text)
+        # with open(output, "xb") as file:
+        #     file.write(res.content)

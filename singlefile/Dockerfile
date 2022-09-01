@@ -1,24 +1,39 @@
-FROM node:latest
+FROM zenika/alpine-chrome:with-node
 
 WORKDIR /usr/app
 
-RUN apt-get update \
-     && apt-get install -y git
+USER root
 
-RUN npm install 'gildas-lormeau/SingleFile#master'
-
-RUN apt-get update && apt-get install --no-install-recommends -y \
-      python3 python3-pip python3-setuptools
+RUN apk update && apk add git \
+    # && apk add build-essential \
+    && apk add curl \
+    && apk add python3 py3-pip py3-setuptools
+    # && apk add --no-install-recommends \
+    # python3 python3-pip python3-setuptools
 
 COPY requirements.txt .
-COPY webserver.py .
 
 RUN pip3 install \
     --no-cache-dir \
     --no-warn-script-location \
-    --user \
     -r requirements.txt
 
 RUN rm requirements.txt
 
-ENTRYPOINT ["/node_modules/single-file/cli/single-file", "--browser-executable-path=/opt/google/chrome/google-chrome", "--browser-args='[\"--no-sandbox\"]'", "--dump-content", "--back-end=jsdom"]
+# RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
+# RUN apk update && apk add -y nodejs
+RUN npm install --production single-file-cli
+# RUN npm install selenium-webdriver
+
+# RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+# ENV PATH="$PATH:/root/.cargo/bin"
+# RUN cargo install geckodriver
+# RUN apk add -y firefox
+# ENV PUPPETEER_PRODUCT="firefox"
+# RUN npm i puppeteer
+
+COPY webserver.py .
+
+WORKDIR /usr/app/out
+
+ENTRYPOINT ["/usr/app/node_modules/single-file/cli/single-file", "--browser-executable-path=/usr/bin/chromium-browser", "--browser-args='[\"--no-sandbox\"]'", "--dump-content"]

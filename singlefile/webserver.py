@@ -1,19 +1,27 @@
+from asyncio.subprocess import STDOUT
 import subprocess
+from sys import stdout
 from flask import Flask, request, Response
 
 server = Flask(__name__)
 
-SINGLEFILE_EXECUTABLE = '/usr/app/node_modules/single-file/cli/single-file'
+SINGLEFILE_EXECUTABLE = "/usr/app/node_modules/single-file-cli/single-file"
+BROWSER_PATH = "/usr/bin/chromium-browser"
+BROWSER_ARGS = "[\"--no-sandbox\"]"
 
 @server.route('/', methods=['POST'])
 def singlefile():
     url = request.form.get('url')
+    index = request.form.get('index')
+    filename = index + ".html"
     if url:
         p = subprocess.Popen([
             SINGLEFILE_EXECUTABLE,
-            request.form['url'],
-            '--dump-content',
-            '--back-end=jsdom',
+            '--browser-executable-path=' + BROWSER_PATH,
+            "--browser-args='%s'" % BROWSER_ARGS,
+            url,
+            '--dump-content=false',
+            filename,
             ],
             stdout=subprocess.PIPE)
     else:
@@ -22,7 +30,7 @@ def singlefile():
     singlefile_html = p.stdout.read()
     return Response(
         singlefile_html,
-        mimetype="text/html",
+        mimetype="text/plain",
     )
 
 
