@@ -21,5 +21,5 @@ with open(filename, 'r') as file :
         payload["index"] = index
         payload["url"] = link
         res = requests.post("http://localhost:8000", data=payload)
-        # with open(output, "xb") as file:
-        #     file.write(res.content)
+        with open(output, "x") as file:
+            file.write(res.text)

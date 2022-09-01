@@ -7,7 +7,3 @@ services:
     command: ../webserver.py
     ports:
       - 8000:80
-    volumes:
-      - out:/usr/app/
-volumes:
-  out:
