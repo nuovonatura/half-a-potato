@@ -1,4 +1,3 @@
-from asyncio.subprocess import STDOUT
 import subprocess
 from sys import stdout
 from flask import Flask, request, Response
@@ -11,18 +10,19 @@ BROWSER_ARGS = "[\"--no-sandbox\"]"
 
 @server.route('/', methods=['POST'])
 def singlefile():
-    url = request.form.get('url')
-    index = request.form.get('index')
-    filename = index + ".html"
-    if url:
-        p = subprocess.Popen([
+    url = str(request.form.get('url'))
+    singlefile = [
             SINGLEFILE_EXECUTABLE,
             '--browser-executable-path=' + BROWSER_PATH,
             "--browser-args='%s'" % BROWSER_ARGS,
             url,
-            '--dump-content=false',
-            filename,
-            ],
+            '--dump-content',
+            ]
+    if url.find("sciencedaily") != -1:
+        singlefile.append("--back-end=jsdom")
+    
+    if url:
+        p = subprocess.Popen(singlefile,
             stdout=subprocess.PIPE)
     else:
         return Response('Error: url parameter not found.',
@@ -30,7 +30,7 @@ def singlefile():
     singlefile_html = p.stdout.read()
     return Response(
         singlefile_html,
-        mimetype="text/plain",
+        mimetype="text/html",
     )
 
 
